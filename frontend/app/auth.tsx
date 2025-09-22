@@ -4,17 +4,11 @@ import {
   Text,
   TouchableOpacity,
   TextInput,
-  KeyboardAvoidingView,
-  Platform,
-  Alert,
-  ScrollView,
   StyleSheet,
+  Alert,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useAuth } from '../contexts/AuthContext';
-import Toast from 'react-native-toast-message';
 
 export default function AuthScreen() {
   const [isLogin, setIsLogin] = useState(true);
@@ -22,7 +16,6 @@ export default function AuthScreen() {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [vehiclePlate, setVehiclePlate] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
 
   const { login, register, isLoading } = useAuth();
 
@@ -42,11 +35,6 @@ export default function AuthScreen() {
     if (isLogin) {
       success = await login(email, password);
       if (success) {
-        Toast.show({
-          type: 'success',
-          text1: 'Login realizado!',
-          text2: 'Bem-vindo de volta ao SafeRide',
-        });
         router.replace('/(tabs)/home');
       } else {
         Alert.alert('Erro', 'Email ou senha incorretos');
@@ -54,11 +42,6 @@ export default function AuthScreen() {
     } else {
       success = await register(email, password, name, vehiclePlate);
       if (success) {
-        Toast.show({
-          type: 'success',
-          text1: 'Cadastro realizado!',
-          text2: 'Bem-vindo ao SafeRide',
-        });
         router.replace('/(tabs)/home');
       } else {
         Alert.alert('Erro', 'Erro no cadastro. Verifique os dados.');
@@ -67,166 +50,101 @@ export default function AuthScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
-        <ScrollView 
-          contentContainerStyle={styles.scrollContainer}
-          showsVerticalScrollIndicator={false}
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.title}>SafeRide</Text>
+        <Text style={styles.subtitle}>Segurança para motoristas</Text>
+      </View>
+
+      {/* Toggle Login/Register */}
+      <View style={styles.toggleContainer}>
+        <TouchableOpacity
+          style={[styles.toggleButton, isLogin && styles.toggleButtonActive]}
+          onPress={() => setIsLogin(true)}
         >
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.logoContainer}>
-              <Ionicons name="car-sport" size={48} color="#FF3B30" />
-              <Text style={styles.title}>SafeRide</Text>
-              <Text style={styles.subtitle}>Segurança para motoristas</Text>
-            </View>
-          </View>
+          <Text style={[styles.toggleText, isLogin && styles.toggleTextActive]}>
+            Entrar
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.toggleButton, !isLogin && styles.toggleButtonActive]}
+          onPress={() => setIsLogin(false)}
+        >
+          <Text style={[styles.toggleText, !isLogin && styles.toggleTextActive]}>
+            Cadastrar
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-          {/* Form Container */}
-          <View style={styles.formContainer}>
-            {/* Toggle Login/Register */}
-            <View style={styles.toggleContainer}>
-              <TouchableOpacity
-                style={[styles.toggleButton, isLogin && styles.toggleButtonActive]}
-                onPress={() => setIsLogin(true)}
-              >
-                <Text style={[styles.toggleText, isLogin && styles.toggleTextActive]}>
-                  Entrar
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.toggleButton, !isLogin && styles.toggleButtonActive]}
-                onPress={() => setIsLogin(false)}
-              >
-                <Text style={[styles.toggleText, !isLogin && styles.toggleTextActive]}>
-                  Cadastrar
-                </Text>
-              </TouchableOpacity>
-            </View>
+      {/* Form Fields */}
+      <View style={styles.formContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          placeholderTextColor="#666"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
 
-            {/* Form Fields */}
-            <View style={styles.inputContainer}>
-              <View style={styles.inputWrapper}>
-                <Ionicons name="mail" size={20} color="#666" style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Email"
-                  placeholderTextColor="#666"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                />
-              </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Senha"
+          placeholderTextColor="#666"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={true}
+          autoCapitalize="none"
+        />
 
-              <View style={styles.inputWrapper}>
-                <Ionicons name="lock-closed" size={20} color="#666" style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Senha"
-                  placeholderTextColor="#666"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={!showPassword}
-                  autoCapitalize="none"
-                />
-                <TouchableOpacity
-                  style={styles.eyeIcon}
-                  onPress={() => setShowPassword(!showPassword)}
-                >
-                  <Ionicons
-                    name={showPassword ? "eye-off" : "eye"}
-                    size={20}
-                    color="#666"
-                  />
-                </TouchableOpacity>
-              </View>
+        {!isLogin && (
+          <>
+            <TextInput
+              style={styles.input}
+              placeholder="Nome completo"
+              placeholderTextColor="#666"
+              value={name}
+              onChangeText={setName}
+              autoCapitalize="words"
+            />
 
-              {!isLogin && (
-                <>
-                  <View style={styles.inputWrapper}>
-                    <Ionicons name="person" size={20} color="#666" style={styles.inputIcon} />
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Nome completo"
-                      placeholderTextColor="#666"
-                      value={name}
-                      onChangeText={setName}
-                      autoCapitalize="words"
-                    />
-                  </View>
+            <TextInput
+              style={styles.input}
+              placeholder="Placa do veículo (ex: ABC1234)"
+              placeholderTextColor="#666"
+              value={vehiclePlate}
+              onChangeText={setVehiclePlate}
+              autoCapitalize="characters"
+              maxLength={8}
+            />
+          </>
+        )}
+      </View>
 
-                  <View style={styles.inputWrapper}>
-                    <Ionicons name="car" size={20} color="#666" style={styles.inputIcon} />
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Placa do veículo (ex: ABC1234)"
-                      placeholderTextColor="#666"
-                      value={vehiclePlate}
-                      onChangeText={setVehiclePlate}
-                      autoCapitalize="characters"
-                      maxLength={8}
-                    />
-                  </View>
-                </>
-              )}
-            </View>
+      {/* Submit Button */}
+      <TouchableOpacity
+        style={[styles.submitButton, isLoading && styles.submitButtonDisabled]}
+        onPress={handleAuth}
+        disabled={isLoading}
+      >
+        <Text style={styles.submitButtonText}>
+          {isLoading ? 'Carregando...' : (isLogin ? 'Entrar' : 'Criar Conta')}
+        </Text>
+      </TouchableOpacity>
 
-            {/* Submit Button */}
-            <TouchableOpacity
-              style={[styles.submitButton, isLoading && styles.submitButtonDisabled]}
-              onPress={handleAuth}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <Text style={styles.submitButtonText}>Carregando...</Text>
-              ) : (
-                <Text style={styles.submitButtonText}>
-                  {isLogin ? 'Entrar' : 'Criar Conta'}
-                </Text>
-              )}
-            </TouchableOpacity>
-
-            {/* Forgot Password */}
-            {isLogin && (
-              <TouchableOpacity
-                style={styles.forgotPasswordButton}
-                onPress={() => router.push('/forgot-password')}
-              >
-                <Text style={styles.forgotPasswordText}>
-                  Esqueceu sua senha?
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View>
-
-          {/* Features Preview */}
-          <View style={styles.featuresContainer}>
-            <Text style={styles.featuresTitle}>Recursos do SafeRide:</Text>
-            <View style={styles.featureItem}>
-              <Ionicons name="warning" size={16} color="#FF3B30" />
-              <Text style={styles.featureText}>Botão de emergência rápido</Text>
-            </View>
-            <View style={styles.featureItem}>
-              <Ionicons name="location" size={16} color="#FF3B30" />
-              <Text style={styles.featureText}>Localização em tempo real</Text>
-            </View>
-            <View style={styles.featureItem}>
-              <Ionicons name="logo-whatsapp" size={16} color="#25D366" />
-              <Text style={styles.featureText}>Alertas via WhatsApp</Text>
-            </View>
-            <View style={styles.featureItem}>
-              <Ionicons name="chatbubbles" size={16} color="#007BFF" />
-              <Text style={styles.featureText}>Chat com motoristas próximos</Text>
-            </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      {/* Debug Info */}
+      <View style={styles.debugContainer}>
+        <Text style={styles.debugText}>
+          Debug: {isLogin ? 'Login' : 'Register'} mode
+        </Text>
+        <Text style={styles.debugText}>
+          Loading: {isLoading ? 'Yes' : 'No'}
+        </Text>
+      </View>
+    </View>
   );
 }
 
@@ -234,46 +152,35 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1a1a1a',
-  },
-  scrollContainer: {
-    flexGrow: 1,
+    padding: 20,
     justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 32,
   },
   header: {
     alignItems: 'center',
     marginBottom: 40,
   },
-  logoContainer: {
-    alignItems: 'center',
-  },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
     color: '#fff',
-    marginTop: 16,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
     color: '#999',
   },
-  formContainer: {
-    marginBottom: 32,
-  },
   toggleContainer: {
     flexDirection: 'row',
     backgroundColor: '#333',
-    borderRadius: 12,
-    marginBottom: 32,
+    borderRadius: 8,
+    marginBottom: 30,
     padding: 4,
   },
   toggleButton: {
     flex: 1,
     paddingVertical: 12,
     alignItems: 'center',
-    borderRadius: 8,
+    borderRadius: 4,
   },
   toggleButtonActive: {
     backgroundColor: '#FF3B30',
@@ -286,36 +193,26 @@ const styles = StyleSheet.create({
   toggleTextActive: {
     color: '#fff',
   },
-  inputContainer: {
-    marginBottom: 24,
-  },
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#333',
-    borderRadius: 12,
-    marginBottom: 16,
-    paddingHorizontal: 16,
-    height: 56,
-  },
-  inputIcon: {
-    marginRight: 12,
+  formContainer: {
+    marginBottom: 20,
   },
   input: {
-    flex: 1,
+    backgroundColor: '#333',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginBottom: 16,
     fontSize: 16,
     color: '#fff',
-  },
-  eyeIcon: {
-    padding: 4,
+    borderWidth: 1,
+    borderColor: '#555',
   },
   submitButton: {
     backgroundColor: '#FF3B30',
-    borderRadius: 12,
-    height: 56,
-    justifyContent: 'center',
+    borderRadius: 8,
+    paddingVertical: 16,
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   submitButtonDisabled: {
     opacity: 0.6,
@@ -325,34 +222,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
   },
-  forgotPasswordButton: {
-    alignItems: 'center',
-  },
-  forgotPasswordText: {
-    fontSize: 16,
-    color: '#007BFF',
-    textDecorationLine: 'underline',
-  },
-  featuresContainer: {
+  debugContainer: {
     backgroundColor: '#333',
-    borderRadius: 12,
-    padding: 20,
+    borderRadius: 8,
+    padding: 16,
+    marginTop: 20,
   },
-  featuresTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  featureItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  featureText: {
-    fontSize: 14,
+  debugText: {
     color: '#ccc',
-    marginLeft: 12,
+    fontSize: 14,
+    marginBottom: 4,
   },
 });
