@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('🔄 AuthContext login attempt for:', email);
       console.log('🌐 Using backend URL:', BACKEND_URL);
       
-      // FIXED: Add more headers and timeout
+      // FIXED: Remove AbortSignal.timeout which is not supported in React Native Web
       const response = await fetch(`${BACKEND_URL}/api/login`, {
         method: 'POST',
         headers: {
@@ -65,8 +65,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           'Accept': 'application/json',
         },
         body: JSON.stringify({ email, password }),
-        // Add timeout to prevent hanging
-        signal: AbortSignal.timeout(10000), // 10 second timeout
       });
 
       console.log('📡 Login response status:', response.status);
@@ -104,7 +102,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('🔄 AuthContext register attempt for:', email);
       console.log('🌐 Using backend URL:', BACKEND_URL);
       
-      // FIXED: Add more headers and timeout
+      // FIXED: Remove AbortSignal.timeout which is not supported in React Native Web
       const response = await fetch(`${BACKEND_URL}/api/register`, {
         method: 'POST',
         headers: {
@@ -117,8 +115,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           name, 
           vehicle_plate: vehiclePlate 
         }),
-        // Add timeout to prevent hanging
-        signal: AbortSignal.timeout(10000), // 10 second timeout
       });
 
       console.log('📡 Register response status:', response.status);
