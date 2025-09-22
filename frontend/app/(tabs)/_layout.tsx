@@ -1,7 +1,6 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { Platform } from 'react-native';
+import { Platform, Text } from 'react-native';
 
 export default function TabsLayout() {
   return (
@@ -25,11 +24,11 @@ export default function TabsLayout() {
       }}
     >
       <Tabs.Screen
-        name="home"
+        name="home-simple"
         options={{
           title: 'Início',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
+            <Text style={{ fontSize: size, color }}>🏠</Text>
           ),
         }}
       />
@@ -38,25 +37,7 @@ export default function TabsLayout() {
         options={{
           title: 'Emergência',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="warning" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="chat"
-        options={{
-          title: 'Chat',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="chatbubbles" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: 'Config',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings" size={size} color={color} />
+            <Text style={{ fontSize: size, color }}>🚨</Text>
           ),
         }}
       />
