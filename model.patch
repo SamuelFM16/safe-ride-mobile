@@ -1,0 +1,234 @@
+diff --git a/model.patch b/model.patch
+index 39ff89a..e69de29 100644
+--- a/model.patch
++++ b/model.patch
+@@ -1,229 +0,0 @@
+-diff --git a/frontend/metro.config.js b/frontend/metro.config.js
+-index 06b6336..0daa9dd 100644
+---- a/frontend/metro.config.js
+-+++ b/frontend/metro.config.js
+-@@ -1,25 +1,32 @@
+- // metro.config.js
+--const { getDefaultConfig } = require("expo/metro-config");
+-+const { getDefaultConfig } = require('@expo/metro-config');
+- const path = require('path');
+--const { FileStore } = require('metro-cache');
+- 
+- const config = getDefaultConfig(__dirname);
+- 
+--// Use a stable on-disk store (shared across web/android)
+--const root = process.env.METRO_CACHE_ROOT || path.join(__dirname, '.metro-cache');
+--config.cacheStores = [
+--  new FileStore({ root: path.join(root, 'cache') }),
+--];
+-+// Add CORS configuration
+-+config.server = {
+-+  ...config.server,
+-+  enhanceMiddleware: (middleware, server) => {
+-+    return (req, res, next) => {
+-+      // Set CORS headers
+-+      res.setHeader('Access-Control-Allow-Origin', '*');
+-+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+-+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+-+      
+-+      // Handle preflight requests
+-+      if (req.method === 'OPTIONS') {
+-+        res.writeHead(200);
+-+        res.end();
+-+        return;
+-+      }
+-+      
+-+      return middleware(req, res, next);
+-+    };
+-+  }
+-+};
+- 
+--
+--// // Exclude unnecessary directories from file watching
+--// config.watchFolders = [__dirname];
+--// config.resolver.blacklistRE = /(.*)\/(__tests__|android|ios|build|dist|.git|node_modules\/.*\/android|node_modules\/.*\/ios|node_modules\/.*\/windows|node_modules\/.*\/macos)(\/.*)?$/;
+--
+--// // Alternative: use a more aggressive exclusion pattern
+--// config.resolver.blacklistRE = /node_modules\/.*\/(android|ios|windows|macos|__tests__|\.git|.*\.android\.js|.*\.ios\.js)$/;
+--
+--// Reduce the number of workers to decrease resource usage
+-+// Optimize for development
+- config.maxWorkers = 2;
+- 
+- module.exports = config;
+-diff --git a/model.patch b/model.patch
+-index b26fc7a..e69de29 100644
+---- a/model.patch
+-+++ b/model.patch
+-@@ -1,171 +0,0 @@
+--diff --git a/app.code-workspace b/app.code-workspace
+--new file mode 100644
+--index 0000000..876a149
+----- /dev/null
+--+++ b/app.code-workspace
+--@@ -0,0 +1,8 @@
+--+{
+--+	"folders": [
+--+		{
+--+			"path": "."
+--+		}
+--+	],
+--+	"settings": {}
+--+}
+--\ No newline at end of file
+--diff --git a/entrypoint.sh b/entrypoint.sh
+--new file mode 100755
+--index 0000000..836ac4d
+----- /dev/null
+--+++ b/entrypoint.sh
+--@@ -0,0 +1,32 @@
+--+#!/bin/bash
+--+
+--+# Function to start the frontend
+--+start_frontend() {
+--+    cd /app/frontend || exit 1
+--+    echo "Starting Expo development server with CORS configuration..."
+--+    export EXPO_TUNNEL_SUBDOMAIN="safety-ride"
+--+    export EXPO_PACKAGER_HOSTNAME="safety-ride.preview.emergentagent.com"
+--+    
+--+    # Set environment variables for CORS
+--+    export EXPO_DEV_SERVER_ALLOWED_HOSTS="app.emergent.sh,safety-ride.preview.emergentagent.com,localhost"
+--+    export EXPO_DEV_SERVER_ORIGIN_WHITELIST="https://app.emergent.sh,https://safety-ride.preview.emergentagent.com"
+--+    
+--+    exec yarn start --tunnel --port 3000 --dev-client
+--+}
+--+
+--+# Function to start the backend
+--+start_backend() {
+--+    cd /app/backend || exit 1
+--+    echo "Starting FastAPI backend server..."
+--+    exec uvicorn server:app --host 0.0.0.0 --port 8001 --reload
+--+}
+--+
+--+# Check if we're running frontend or backend
+--+if [ "$1" == "frontend" ]; then
+--+    start_frontend
+--+elif [ "$1" == "backend" ]; then
+--+    start_backend
+--+else
+--+    echo "Usage: $0 {frontend|backend}"
+--+    exit 1
+--+fi
+--\ No newline at end of file
+--diff --git a/model.patch b/model.patch
+--index 6542a39..e69de29 100644
+----- a/model.patch
+--+++ b/model.patch
+--@@ -1,112 +0,0 @@
+---diff --git a/model.patch b/model.patch
+---index cb38bb6..e69de29 100644
+------ a/model.patch
+---+++ b/model.patch
+---@@ -1,107 +0,0 @@
+----diff --git a/frontend/app/index.tsx b/frontend/app/index.tsx
+----index 7efbdb8..d926dfd 100644
+------- a/frontend/app/index.tsx
+----+++ b/frontend/app/index.tsx
+----@@ -817,6 +817,17 @@ export default function Index() {
+----                 {isLogin ? 'Entrar' : 'Cadastrar'}
+----               </Text>
+----             </TouchableOpacity>
+----+
+----+            {isLogin && (
+----+              <TouchableOpacity 
+----+                style={styles.forgotPasswordButton}
+----+                onPress={() => router.push('/forgot-password')}
+----+              >
+----+                <Text style={styles.forgotPasswordText}>
+----+                  Esqueceu sua senha?
+----+                </Text>
+----+              </TouchableOpacity>
+----+            )}
+----           </View>
+----         </ScrollView>
+----       </KeyboardAvoidingView>
+----@@ -1034,6 +1045,15 @@ const styles = StyleSheet.create({
+----     fontSize: 18,
+----     fontWeight: 'bold',
+----   },
+----+  forgotPasswordButton: {
+----+    marginTop: 15,
+----+    alignItems: 'center',
+----+  },
+----+  forgotPasswordText: {
+----+    color: '#007BFF',
+----+    fontSize: 14,
+----+    textDecorationLine: 'underline',
+----+  },
+----   header: {
+----     paddingTop: Platform.OS === 'ios' ? 50 : 30,
+----     paddingHorizontal: 20,
+----diff --git a/model.patch b/model.patch
+----index fe2ee3b..e69de29 100644
+------- a/model.patch
+----+++ b/model.patch
+----@@ -1,64 +0,0 @@
+-----diff --git a/frontend/app/index.tsx b/frontend/app/index.tsx
+-----index 4eda527..7efbdb8 100644
+-------- a/frontend/app/index.tsx
+-----+++ b/frontend/app/index.tsx
+-----@@ -313,51 +313,7 @@ export default function Index() {
+-----     }
+-----   };
+----- 
+------  const cancelActiveEmergency = async () => {
+------    try {
+------      Alert.alert(
+------        'Cancelar Emergência',
+------        'Tem certeza que deseja cancelar a emergência ativa? Outros motoristas não receberão mais alertas.',
+------        [
+------          { text: 'Não', style: 'cancel' },
+------          {
+------            text: 'Sim, Cancelar',
+------            style: 'destructive',
+------            onPress: async () => {
+------              const token = await AsyncStorage.getItem('auth_token');
+------              if (!token) return;
+------
+------              const response = await fetch(`${BACKEND_URL}/api/emergency/cancel`, {
+------                method: 'POST',
+------                headers: {
+------                  'Content-Type': 'application/json',
+------                  'Authorization': `Bearer ${token}`,
+------                },
+------              });
+----- 
+------              if (response.ok) {
+------                setHasActiveEmergency(false);
+------                setEmergencyButtonDisabled(false);
+------                await AsyncStorage.removeItem('emergency_button_disabled');
+------                
+------                Toast.show({
+------                  type: 'success',
+------                  text1: 'Emergência Cancelada',
+------                  text2: 'Sua emergência foi cancelada com sucesso',
+------                });
+------              } else {
+------                const error = await response.json();
+------                Alert.alert('Erro', error.detail || 'Erro ao cancelar emergência');
+------              }
+------            }
+------          }
+------        ]
+------      );
+------    } catch (error) {
+------      console.error('Error canceling emergency:', error);
+------      Alert.alert('Erro', 'Não foi possível cancelar a emergência. Tente novamente.');
+------    }
+------  };
+----- 
+-----   const sendWhatsAppAlerts = async (contacts: string[], userLocation: Location.LocationObject) => {
+-----     try {
+-----@@ -414,7 +370,6 @@ export default function Index() {
+-----     }
+-----   };
+----- 
+------  const handleEmergency = async () => {
+-----   const handleEmergency = async () => {
+-----     try {
+-----       if (!location || !user) return;
