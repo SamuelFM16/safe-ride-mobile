@@ -12,14 +12,17 @@ import { useAuth } from '../contexts/AuthContext';
 
 export default function AuthScreen() {
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [vehiclePlate, setVehiclePlate] = useState('');
+  const [email, setEmail] = useState('teste@saferide.com');
+  const [password, setPassword] = useState('123456');
+  const [name, setName] = useState('Usuario Teste');
+  const [vehiclePlate, setVehiclePlate] = useState('TEST123');
+  const [debugInfo, setDebugInfo] = useState('');
 
   const { login, register, isLoading } = useAuth();
 
   const handleAuth = async () => {
+    setDebugInfo('🔄 Iniciando autenticação...');
+    
     if (!email || !password) {
       Alert.alert('Erro', 'Preencha email e senha');
       return;
@@ -32,20 +35,63 @@ export default function AuthScreen() {
 
     let success = false;
     
-    if (isLogin) {
-      success = await login(email, password);
-      if (success) {
-        router.replace('/(tabs)/home');
+    try {
+      if (isLogin) {
+        setDebugInfo('🔄 Tentando fazer login...');
+        success = await login(email, password);
+        if (success) {
+          setDebugInfo('✅ Login bem-sucedido! Redirecionando...');
+          setTimeout(() => {
+            router.replace('/(tabs)/home-simple');
+          }, 1000);
+        } else {
+          setDebugInfo('❌ Login falhou - credenciais incorretas');
+          Alert.alert('Erro', 'Email ou senha incorretos');
+        }
       } else {
-        Alert.alert('Erro', 'Email ou senha incorretos');
+        setDebugInfo('🔄 Tentando registrar...');
+        success = await register(email, password, name, vehiclePlate);
+        if (success) {
+          setDebugInfo('✅ Registro bem-sucedido! Redirecionando...');
+          setTimeout(() => {
+            router.replace('/(tabs)/home-simple');
+          }, 1000);
+        } else {
+          setDebugInfo('❌ Registro falhou');
+          Alert.alert('Erro', 'Erro no cadastro. Verifique os dados.');
+        }
       }
-    } else {
-      success = await register(email, password, name, vehiclePlate);
-      if (success) {
-        router.replace('/(tabs)/home');
+    } catch (error) {
+      setDebugInfo(`❌ Erro: ${error}`);
+      Alert.alert('Erro', `Erro na autenticação: ${error}`);
+    }
+  };
+
+  // Direct API test function
+  const testDirectAPI = async () => {
+    setDebugInfo('🔄 Testando API diretamente...');
+    
+    try {
+      const response = await fetch('http://localhost:8001/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          email: 'teste@saferide.com', 
+          password: '123456' 
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        setDebugInfo(`✅ API Direct Test SUCCESS! Token: ${data.access_token.substring(0, 20)}...`);
       } else {
-        Alert.alert('Erro', 'Erro no cadastro. Verifique os dados.');
+        setDebugInfo(`❌ API Direct Test FAILED: ${data.detail || 'Unknown error'}`);
       }
+    } catch (error) {
+      setDebugInfo(`❌ API Direct Test ERROR: ${error}`);
     }
   };
 
@@ -124,7 +170,7 @@ export default function AuthScreen() {
         )}
       </View>
 
-      {/* Submit Button */}
+      {/* Buttons */}
       <TouchableOpacity
         style={[styles.submitButton, isLoading && styles.submitButtonDisabled]}
         onPress={handleAuth}
@@ -135,14 +181,37 @@ export default function AuthScreen() {
         </Text>
       </TouchableOpacity>
 
+      {/* Direct API Test Button */}
+      <TouchableOpacity
+        style={styles.testButton}
+        onPress={testDirectAPI}
+      >
+        <Text style={styles.testButtonText}>
+          🧪 Testar API Diretamente
+        </Text>
+      </TouchableOpacity>
+
       {/* Debug Info */}
       <View style={styles.debugContainer}>
+        <Text style={styles.debugTitle}>Debug Info:</Text>
         <Text style={styles.debugText}>
-          Debug: {isLogin ? 'Login' : 'Register'} mode
+          {debugInfo || 'Nenhuma informação ainda...'}
+        </Text>
+        <Text style={styles.debugText}>
+          Mode: {isLogin ? 'Login' : 'Register'}
         </Text>
         <Text style={styles.debugText}>
           Loading: {isLoading ? 'Yes' : 'No'}
         </Text>
+      </View>
+
+      {/* Features */}
+      <View style={styles.featuresContainer}>
+        <Text style={styles.featuresTitle}>Recursos do SafeRide:</Text>
+        <Text style={styles.featureText}>⚠️ Botão de emergência rápido</Text>
+        <Text style={styles.featureText}>📍 Localização em tempo real</Text>
+        <Text style={styles.featureText}>📱 Alertas via WhatsApp</Text>
+        <Text style={styles.featureText}>💬 Chat com motoristas próximos</Text>
       </View>
     </View>
   );
@@ -153,11 +222,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1a1a1a',
     padding: 20,
-    justifyContent: 'center',
   },
   header: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 30,
+    marginTop: 20,
   },
   title: {
     fontSize: 32,
@@ -173,7 +242,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#333',
     borderRadius: 8,
-    marginBottom: 30,
+    marginBottom: 20,
     padding: 4,
   },
   toggleButton: {
@@ -194,14 +263,14 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   formContainer: {
-    marginBottom: 20,
+    marginBottom: 15,
   },
   input: {
     backgroundColor: '#333',
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    marginBottom: 16,
+    marginBottom: 12,
     fontSize: 16,
     color: '#fff',
     borderWidth: 1,
@@ -212,25 +281,59 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 16,
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   submitButtonDisabled: {
     opacity: 0.6,
   },
   submitButtonText: {
-    fontSize: 18,
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  testButton: {
+    backgroundColor: '#007BFF',
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  testButtonText: {
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#fff',
   },
   debugContainer: {
     backgroundColor: '#333',
     borderRadius: 8,
-    padding: 16,
-    marginTop: 20,
+    padding: 12,
+    marginBottom: 15,
+  },
+  debugTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 8,
   },
   debugText: {
     color: '#ccc',
+    fontSize: 12,
+    marginBottom: 3,
+  },
+  featuresContainer: {
+    backgroundColor: '#333',
+    borderRadius: 8,
+    padding: 15,
+  },
+  featuresTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 10,
+  },
+  featureText: {
+    color: '#ccc',
     fontSize: 14,
-    marginBottom: 4,
+    marginBottom: 5,
   },
 });
