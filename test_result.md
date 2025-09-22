@@ -131,6 +131,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ Login endpoint working correctly. Successfully authenticates users with valid credentials and returns JWT token. Properly rejects invalid credentials with 401 status."
+      - working: true
+        agent: "testing"
+        comment: "✅ URGENT RE-TEST COMPLETED: POST /api/login working perfectly on localhost:8001. Successfully authenticated user with exact credentials requested (teste@saferide.com, 123456). Returns valid JWT token. Invalid credentials properly rejected with 401 'Incorrect email or password'. ISSUE: External URL returns 502 - Kubernetes ingress routing problem."
         
   - task: "Emergency Creation API"
     implemented: true
