@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "SafeRide",
-    "slug": "safe-ride",
+    "slug": "safe-ride-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -14,37 +14,44 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.saferide.app"
+      "bundleIdentifier": "com.saferide.mobile.app",
+      "buildNumber": "1"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#1a1a1a"
       },
-      "package": "com.saferide.app"
+      "package": "com.saferide.mobile.app",
+      "versionCode": 1,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "VIBRATE",
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
     "plugins": [
-      "expo-router",
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Este app precisa acessar sua localização para funcionar em emergências.",
-          "locationAlwaysPermission": "Este app precisa acessar sua localização em segundo plano para alertas de emergência.",
-          "locationWhenInUsePermission": "Este app precisa acessar sua localização para funcionar."
+          "locationAlwaysAndWhenInUsePermission": "SafeRide precisa acessar sua localização para funcionar corretamente em emergências e compartilhar sua posição com outros motoristas.",
+          "locationAlwaysPermission": "SafeRide precisa acessar sua localização em segundo plano para monitorar emergências próximas e enviar alertas quando necessário.",
+          "locationWhenInUsePermission": "SafeRide precisa acessar sua localização para mostrar emergências próximas e ativar o sistema de socorro."
         }
       ]
     ],
     "scheme": "saferide",
+    "privacy": "https://saferide-app.com/privacy-policy",
     "extra": {
-      "router": {
-        "origin": false
-      },
       "eas": {
-        "projectId": "your-project-id-here"
+        "projectId": "fb8b1f15-3d4c-4c5c-9a1b-8d7f6e5c4b3a"
       }
     }
   }
