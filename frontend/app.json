@@ -1,59 +1,51 @@
 {
   "expo": {
     "name": "SafeRide",
-    "slug": "saferide",
+    "slug": "safe-ride",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "saferide",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1a1a1a"
+    },
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "Este app precisa da sua localização para funcionar em emergências",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "Este app precisa da sua localização em segundo plano para emergências"
-      }
+      "bundleIdentifier": "com.saferide.app"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#FF3B30"
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1a1a1a"
       },
-      "permissions": [
-        "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION",
-        "ACCESS_BACKGROUND_LOCATION"
-      ]
+      "package": "com.saferide.app"
     },
     "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
     },
     "plugins": [
       "expo-router",
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Este app precisa da sua localização para funcionar em emergências.",
-          "locationAlwaysPermission": "Este app precisa da sua localização em segundo plano para emergências.",
-          "locationWhenInUsePermission": "Este app precisa da sua localização para funcionar em emergências."
+          "locationAlwaysAndWhenInUsePermission": "Este app precisa acessar sua localização para funcionar em emergências.",
+          "locationAlwaysPermission": "Este app precisa acessar sua localização em segundo plano para alertas de emergência.",
+          "locationWhenInUsePermission": "Este app precisa acessar sua localização para funcionar."
         }
-      ],
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#FF3B30"
-        }
-      ],
-      "expo-font"
+      ]
     ],
-    "experiments": {
-      "typedRoutes": true
+    "scheme": "saferide",
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "your-project-id-here"
+      }
     }
   }
 }
