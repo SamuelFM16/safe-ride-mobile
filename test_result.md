@@ -116,6 +116,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ User registration endpoint working correctly. Successfully creates new users with email, password, name, and vehicle_plate. Returns JWT token and user data. Properly handles duplicate email validation."
+      - working: true
+        agent: "testing"
+        comment: "✅ URGENT RE-TEST COMPLETED: POST /api/register working perfectly on localhost:8001. Successfully created user with exact data requested (teste@saferide.com, 123456, Usuario Teste, TEST123). Returns valid JWT token. Duplicate email validation working (returns 400 'Email already registered'). MongoDB connection functional. ISSUE: External URL returns 502 - Kubernetes ingress routing problem."
         
   - task: "User Login API"
     implemented: true
