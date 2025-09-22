@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { Stack } from 'expo-router';
 import { TamaguiProvider } from '@tamagui/core';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import Toast from 'react-native-toast-message';
+import { AuthProvider } from '../contexts/AuthContext';
 import config from '../tamagui.config';
 
 export default function RootLayout() {
