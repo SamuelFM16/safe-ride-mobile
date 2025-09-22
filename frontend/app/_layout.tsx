@@ -12,53 +12,55 @@ export default function RootLayout() {
   const insets = useSafeAreaInsets();
 
   return (
-    <TamaguiProvider config={config} defaultTheme="saferide_dark">
-      <View style={{ flex: 1, paddingTop: insets.top }}>
-        <StatusBar style="light" backgroundColor="#1a1a1a" />
-        <Stack
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: '#333',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
-            headerShown: false, // We'll handle headers manually for better control
-          }}
-        >
-          <Stack.Screen 
-            name="index" 
-            options={{ 
-              title: 'SafeRide',
-              headerShown: false 
-            }} 
-          />
-          <Stack.Screen 
-            name="(tabs)" 
-            options={{ 
-              headerShown: false 
-            }} 
-          />
-          <Stack.Screen 
-            name="auth" 
-            options={{ 
-              title: 'Entrar',
-              headerShown: false,
-              presentation: 'modal' 
-            }} 
-          />
-          <Stack.Screen 
-            name="forgot-password" 
-            options={{ 
-              title: 'Recuperar Senha',
-              headerShown: true,
-              presentation: 'modal' 
-            }} 
-          />
-        </Stack>
-        <Toast />
-      </View>
-    </TamaguiProvider>
+    <AuthProvider>
+      <TamaguiProvider config={config} defaultTheme="saferide_dark">
+        <View style={{ flex: 1, paddingTop: insets.top }}>
+          <StatusBar style="light" backgroundColor="#1a1a1a" />
+          <Stack
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: '#333',
+              },
+              headerTintColor: '#fff',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+              },
+              headerShown: false, // We'll handle headers manually for better control
+            }}
+          >
+            <Stack.Screen 
+              name="index" 
+              options={{ 
+                title: 'SafeRide',
+                headerShown: false 
+              }} 
+            />
+            <Stack.Screen 
+              name="(tabs)" 
+              options={{ 
+                headerShown: false 
+              }} 
+            />
+            <Stack.Screen 
+              name="auth" 
+              options={{ 
+                title: 'Entrar',
+                headerShown: false,
+                presentation: 'modal' 
+              }} 
+            />
+            <Stack.Screen 
+              name="forgot-password" 
+              options={{ 
+                title: 'Recuperar Senha',
+                headerShown: true,
+                presentation: 'modal' 
+              }} 
+            />
+          </Stack>
+          <Toast />
+        </View>
+      </TamaguiProvider>
+    </AuthProvider>
   );
 }
