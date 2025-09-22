@@ -20,7 +20,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Use a fixed backend URL for now to avoid environment issues
+// FIXED: Use the working backend URL that we tested
 const BACKEND_URL = "http://localhost:8001";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -54,33 +54,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       setIsLoading(true);
-      console.log('🔄 Attempting login for:', email);
+      console.log('🔄 AuthContext login attempt for:', email);
       console.log('🌐 Using backend URL:', BACKEND_URL);
       
+      // FIXED: Add more headers and timeout
       const response = await fetch(`${BACKEND_URL}/api/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
         body: JSON.stringify({ email, password }),
+        // Add timeout to prevent hanging
+        signal: AbortSignal.timeout(10000), // 10 second timeout
       });
 
       console.log('📡 Login response status:', response.status);
-      const data = await response.json();
-      console.log('📄 Login response data:', data);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log('❌ Login failed with error:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
 
-      if (response.ok) {
+      const data = await response.json();
+      console.log('📄 Login response data received, user:', data.user?.email || 'unknown');
+
+      if (data.access_token && data.user) {
         await AsyncStorage.setItem('auth_token', data.access_token);
         await AsyncStorage.setItem('user_data', JSON.stringify(data.user));
         setUser(data.user);
         console.log('✅ Login successful for:', data.user.email);
         return true;
       } else {
-        console.log('❌ Login failed:', data.detail || 'Unknown error');
-        throw new Error(data.detail || 'Erro na autenticação');
+        console.log('❌ Login response missing token or user data');
+        return false;
       }
     } catch (error) {
-      console.error('❌ Login error:', error);
+      console.error('❌ Login error details:', error);
       return false;
     } finally {
       setIsLoading(false);
@@ -90,13 +101,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const register = async (email: string, password: string, name: string, vehiclePlate: string): Promise<boolean> => {
     try {
       setIsLoading(true);
-      console.log('🔄 Attempting registration for:', email);
+      console.log('🔄 AuthContext register attempt for:', email);
       console.log('🌐 Using backend URL:', BACKEND_URL);
       
+      // FIXED: Add more headers and timeout
       const response = await fetch(`${BACKEND_URL}/api/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
         body: JSON.stringify({ 
           email, 
@@ -104,24 +117,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           name, 
           vehicle_plate: vehiclePlate 
         }),
+        // Add timeout to prevent hanging
+        signal: AbortSignal.timeout(10000), // 10 second timeout
       });
 
       console.log('📡 Register response status:', response.status);
-      const data = await response.json();
-      console.log('📄 Register response data:', data);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log('❌ Register failed with error:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
 
-      if (response.ok) {
+      const data = await response.json();
+      console.log('📄 Register response data received, user:', data.user?.email || 'unknown');
+
+      if (data.access_token && data.user) {
         await AsyncStorage.setItem('auth_token', data.access_token);
         await AsyncStorage.setItem('user_data', JSON.stringify(data.user));
         setUser(data.user);
         console.log('✅ Registration successful for:', data.user.email);
         return true;
       } else {
-        console.log('❌ Registration failed:', data.detail || 'Unknown error');
-        throw new Error(data.detail || 'Erro no cadastro');
+        console.log('❌ Register response missing token or user data');
+        return false;
       }
     } catch (error) {
-      console.error('❌ Register error:', error);
+      console.error('❌ Register error details:', error);
       return false;
     } finally {
       setIsLoading(false);
