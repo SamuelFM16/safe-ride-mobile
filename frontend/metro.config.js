@@ -4,6 +4,13 @@ const path = require('path');
 
 const config = getDefaultConfig(__dirname);
 
+// Tamagui configuration
+config.resolver.alias = {
+  '@tamagui/core': '@tamagui/core',
+  '@tamagui/config': '@tamagui/config',
+  '@tamagui/animations-react-native': '@tamagui/animations-react-native',
+};
+
 // Add CORS configuration
 config.server = {
   ...config.server,
